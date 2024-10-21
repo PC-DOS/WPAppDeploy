@@ -1,0 +1,50 @@
+﻿<Controls:MetroWindow x:Class="MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    Title="WPAppDeploy" Height="500" Width="750" WindowStartupLocation="CenterScreen" MinWidth="750" MinHeight="500">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="150" MaxWidth="245"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="2.5*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" Margin="0,0,10,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="搜尋到的裝置: "/>
+            <ListBox x:Name="lstPhones" Grid.Row="1" Margin="0,10" BorderBrush="{DynamicResource {x:Static SystemColors.ScrollBarBrushKey}}" BorderThickness="1"/>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="btnRefreshPhone" Grid.Column="0" Content="重新整理(_R)" Margin="0,0,5,0"/>
+                <Button x:Name="btnConnect" Grid.Column="1" Content="連線(_C)" Margin="5,0,0,0" BorderBrush="#FFCCCCCC"/>
+            </Grid>
+        </Grid>
+        <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="2.5" Margin="0" />
+        <Controls:MetroTabControl Grid.Column="2">
+            <Controls:MetroTabItem Header="裝置資訊" Controls:ControlsHelper.HeaderFontSize="20">
+                <Grid Margin="10,0,0,0">
+                    <ScrollViewer>
+                        <StackPanel Orientation="Vertical" >
+                            <Grid Margin="0,0,0,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.25*"/>
+                                    <ColumnDefinition Width="2.5*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="OS 組建:" FontWeight="Bold" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="txtOSBuild" Grid.Column="1" Text="" TextWrapping="Wrap"/>
+                            </Grid>
+                            <Button x:Name="btnTestDeploy" Content="Test Deploy UWP" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Controls:MetroTabItem>
+        </Controls:MetroTabControl>
+    </Grid>
+</Controls:MetroWindow>
