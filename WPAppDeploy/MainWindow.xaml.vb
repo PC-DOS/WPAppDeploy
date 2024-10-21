@@ -10,11 +10,12 @@ Imports Microsoft.SmartDevice.MultiTargeting.Connectivity
 Imports WindowsPhone.Tools
 Class MainWindow
     'Constants
-    Const PhoneNameMode As String = "{Name} (ID={ID}){IsEmulator}"
+    Const PhoneNameMode As String = "{Name}" & vbCrLf & "(ID={ID})" & vbCrLf & "{IsEmulator}"
 
     'Variables
     Dim PhoneManager As New MultiTargetingConnectivity(System.Globalization.CultureInfo.CurrentCulture.LCID)
     Dim PhoneList As New List(Of ConnectableDevice)
+    Dim CurrentConnectedPhoneOrigin As ConnectableDevice
     Dim CurrentConnectedPhone As IDevice = Nothing
     Dim EmptyList As New List(Of String)
     Dim IsPhoneConnected As Boolean = False
@@ -29,7 +30,7 @@ Class MainWindow
             PhoneList.Clear()
             For Each Device In PhoneManager.GetConnectableDevices(False)
                 PhoneList.Add(Device)
-                PhoneNameList.Add(PhoneNameMode.Replace("{Name}", Device.Name).Replace("{ID}", Device.Id).Replace("{IsEmulator}", IIf(Device.IsEmulator, " (Emulator)", "")))
+                PhoneNameList.Add(PhoneNameMode.Replace("{Name}", Device.Name).Replace("{ID}", Device.Id).Replace("{IsEmulator}", IIf(Device.IsEmulator, " (Emulator)", "(Real Device)")))
             Next
             lstPhones.ItemsSource = PhoneNameList
         Catch ex As Exception
@@ -50,29 +51,38 @@ Class MainWindow
                 IsPhoneConnected = False
             End Try
             'Connect
+            ConnectingProgress = Await DialogManager.ShowProgressAsync(Me, "Connecting", "Connecting to """ & lstPhones.SelectedItem.ToString() & """...")
             Try
-                ConnectingProgress = Await DialogManager.ShowProgressAsync(Me, "Connecting", "Connecting to """ & lstPhones.SelectedItem.ToString() & """...")
                 System.Windows.Forms.Application.DoEvents()
                 CurrentConnectedPhone = PhoneList(lstPhones.SelectedIndex).Connect()
-                Await ConnectingProgress.CloseAsync()
                 IsPhoneConnected = True
             Catch ex As Exception
                 IsPhoneConnected = False
                 ResultMessage = ex.HResult.ToString & ": " & ex.Message
             End Try
+            Await ConnectingProgress.CloseAsync()
             'Check result
             If Not IsPhoneConnected Then
-                Await ShowMessageAsync("Unable to connect to """ & lstPhones.SelectedItem.ToString() & """..." & vbCrLf & "Error " & ResultMessage, "Connection failed")
+                Await ShowMessageAsync("Connection failed", "Unable to connect to """ & lstPhones.SelectedItem.ToString() & """..." & vbCrLf & "Error " & ResultMessage)
                 IsPhoneConnected = False
             Else
                 IsPhoneConnected = True
+                CurrentConnectedPhoneOrigin = PhoneList(lstPhones.SelectedIndex)
                 RaiseEvent PhoneConnected()
             End If
         End If
     End Sub
     Private Sub UpdatePhoneInfo() Handles Me.PhoneConnected
+        lblDeviceName.Text = CurrentConnectedPhoneOrigin.Name
+        lblDeviceID.Text = CurrentConnectedPhoneOrigin.Id
+        lblIsEmulator.Text = IIf(CurrentConnectedPhoneOrigin.IsEmulator(), "是", "否")
         Dim PhoneInfo As ISystemInfo = CurrentConnectedPhone.GetSystemInfo()
-        txtOSBuild.Text = PhoneInfo.OSMajor.ToString() & "." & PhoneInfo.OSMinor.ToString() & "." & PhoneInfo.OSBuildNo.ToString()
+        lblOSBuild.Text = PhoneInfo.OSMajor.ToString() & "." & PhoneInfo.OSMinor.ToString() & "." & PhoneInfo.OSBuildNo.ToString()
+        lblProcessorArchitecture.Text = PhoneInfo.ProcessorArchitecture
+        lblProcessorInstructionSet.Text = PhoneInfo.InstructionSet
+        lblProcessorCount.Text = PhoneInfo.NumberOfProcessors.ToString()
+        lblRAMSize.Text = PhoneInfo.AvailPhys.ToString() & " / " & PhoneInfo.TotalPhys.ToString()
+        lblVirtualRAMSize.Text = PhoneInfo.AvailVirtual.ToString() & " / " & PhoneInfo.TotalVirtual.ToString()
     End Sub
 
     Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
