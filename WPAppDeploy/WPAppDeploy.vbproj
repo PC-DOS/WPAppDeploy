@@ -68,6 +68,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Microsoft.Smartdevice.Connectivity.Interface.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Smartdevice.ConnectivityWrapper.10, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Microsoft.Smartdevice.ConnectivityWrapper.10.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Smartdevice.ConnectivityWrapper.11, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Microsoft.Smartdevice.ConnectivityWrapper.11.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Smartdevice.ConnectivityWrapper.12, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Microsoft.Smartdevice.ConnectivityWrapper.12.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Smartdevice.MultiTargeting.Connectivity, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Microsoft.Smartdevice.MultiTargeting.Connectivity.dll</HintPath>
