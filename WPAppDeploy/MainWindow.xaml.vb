@@ -65,7 +65,6 @@ Class MainWindow
             ConnectingProgress = Await DialogManager.ShowProgressAsync(Me, "Connecting", "Connecting to """ & lstPhones.SelectedItem.ToString() & """...")
             ConnectingProgress.SetIndeterminate()
             Try
-                'PhoneManager.ConnectToPhone(PhoneList(lstPhones.SelectedIndex))
                 Await PhoneManager.ConnectToPhoneAsync(PhoneList(lstPhones.SelectedIndex))
             Catch ex As Exception
                 ResultMessage = ex.HResult.ToString & ": " & ex.Message
@@ -79,6 +78,7 @@ Class MainWindow
             End If
         End If
     End Sub
+
     Private Sub UpdatePhoneInfo() Handles Me.PhoneConnected
         lblDeviceName.Text = PhoneManager.ConnectedPhone.RawDevice.Name
         lblDeviceID.Text = PhoneManager.ConnectedPhone.RawDevice.Id
@@ -90,6 +90,21 @@ Class MainWindow
         lblProcessorCount.Text = PhoneInfo.NumberOfProcessors.ToString()
         lblRAMSize.Text = PhoneInfo.AvailPhys.ToString() & " / " & PhoneInfo.TotalPhys.ToString()
         lblVirtualRAMSize.Text = PhoneInfo.AvailVirtual.ToString() & " / " & PhoneInfo.TotalVirtual.ToString()
+    End Sub
+
+    Private Sub WriteAppDeploymentLog(LogText As String)
+        'Write log
+        AppDeploymentLog.Add(LogText)
+
+        'Update display
+        lstAppDeploymentHistory.ItemsSource = EmptyList
+        lstAppDeploymentHistory.ItemsSource = AppDeploymentLog
+        lstAppDeploymentHistory.SelectedIndex = lstAppDeploymentHistory.Items.Count - 1
+        Try
+            lstAppDeploymentHistory.ScrollIntoView(lstAppDeploymentHistory.SelectedItem)
+        Catch ex As Exception
+            Exit Sub
+        End Try
     End Sub
 
     Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
