@@ -60,10 +60,14 @@ Public Class Windows10ConnectionManager
         ''' <returns>List of discovered devices.</returns>
         ''' <remarks></remarks>
         Public Function StartDeviceDiscovering() As List(Of DiscoveredDeviceInfo)
+            _PhoneConnectionManager.Timeout = _PhoneDiscoveryTimeOut
+            AddHandler _PhoneConnectionManager.Discovered, Sub(sender As Object, e As DiscoveredEventArgs)
+                                                               _DevicesDiscovered.Add(e.Info)
+                                                           End Sub
             _PhoneConnectionManager.Start()
             Thread.Sleep(_PhoneDiscoveryTimeOut)
             _PhoneConnectionManager.Stop()
-            Return _PhoneConnectionManager.DevicesDiscovered()
+            Return _DevicesDiscovered
         End Function
         ''' <summary>
         ''' Time out of device discovering.

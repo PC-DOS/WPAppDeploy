@@ -42,10 +42,11 @@ Class UWPDeployerWindow
             PhoneList.Clear()
             For Each Device In Await PhoneManager.EnumerateDevicesAsync()
                 PhoneList.Add(Device)
-                PhoneNameList.Add(PhoneNameMode.Replace("{Name}", Device.Name).Replace("{OSVersion}", Device.OSVersion).Replace("{ID}", Device.UniqueId.ToString()).Replace("{{IPAddress}}", Device.Address))
+                PhoneNameList.Add(PhoneNameMode.Replace("{Name}", Device.Name).Replace("{OSVersion}", Device.OSVersion).Replace("{ID}", Device.UniqueId.ToString()).Replace("{IPAddress}", Device.Address))
             Next
             lstPhones.ItemsSource = PhoneNameList
         Catch ex As Exception
+            Throw ex
             lstPhones.ItemsSource = EmptyList
         End Try
 
