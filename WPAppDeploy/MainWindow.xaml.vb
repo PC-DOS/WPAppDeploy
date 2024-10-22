@@ -338,6 +338,12 @@ Class MainWindow
         UpdateControlStatus()
     End Sub
 
+    Private Sub lstAppDeployHistory_KeyUp(sender As Object, e As KeyEventArgs) Handles lstAppDeployHistory.KeyUp
+        If e.Key = Key.Enter Then
+            AddSelectedPackagesToPendingList()
+        End If
+    End Sub
+
     Private Sub lstAppDeployHistory_MouseDoubleClick(sender As Object, e As MouseButtonEventArgs) Handles lstAppDeployHistory.MouseDoubleClick
         AddSelectedPackagesToPendingList()
     End Sub

@@ -132,6 +132,7 @@ Public Class WindowsPhoneConnectionManager
         ''' <returns>Instance of deployed app package on remote.</returns>
         ''' <remarks></remarks>
         Public Function InstallAppPackage() As IRemoteApplication
+            'Parse package info
             Dim AppGuid As System.Guid
             Dim AppGenre As String
             Dim AppIconPath As String
@@ -147,6 +148,7 @@ Public Class WindowsPhoneConnectionManager
                 AppIconPath = CInt(AppManifest.PackageType).ToString()
             End If
 
+            'Install package
             _DeployedAppPackage = _PhoneToDeploy.InstallApplication(AppGuid, _
                                                                     AppGuid, _
                                                                     AppGenre, _
