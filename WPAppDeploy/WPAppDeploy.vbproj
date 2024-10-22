@@ -123,6 +123,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="SettingsProvider.vb" />
+    <Compile Include="UWPDeployerWindow.xaml.vb">
+      <DependentUpon>UWPDeployerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows10ConnectionManager.vb" />
     <Compile Include="WindowsPhoneConnectionManager.vb" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -136,6 +140,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UWPDeployerWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Import Include="System.Threading.Tasks" />

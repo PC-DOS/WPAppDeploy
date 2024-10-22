@@ -1,23 +1,18 @@
 ﻿Imports MahApps.Metro.Controls.Dialogs
 Imports System.IO
-Imports System.Threading
-Imports System.Threading.Tasks
 Imports System.Windows.Media
 Imports System.Windows.Media.Imaging
-Imports Microsoft.Phone.Tools.Deploy
 Imports Microsoft.WindowsAPICodePack.Dialogs
-Imports Microsoft.SmartDevice.Connectivity
-Imports Microsoft.SmartDevice.Connectivity.Interface
-Imports Microsoft.SmartDevice.MultiTargeting.Connectivity
-Imports WindowsPhone.Tools
-Class MainWindow
+Imports Microsoft.Tools.Connectivity
+Imports Microsoft.Tools.Deploy
+Class UWPDeployerWindow
     'Constants
-    Const PhoneNameMode As String = "{Name}" & vbCrLf & "(ID={ID})" & vbCrLf & "{IsEmulator}"
+    Const PhoneNameMode As String = "{Name} ({OSVersion})" & vbCrLf & "(ID={ID})" & vbCrLf & "(IPAddress={IPAddress})"
 
 
     'Phone connection management
-    Dim PhoneManager As New WindowsPhoneConnectionManager
-    Dim PhoneList As New List(Of ConnectableDevice)
+    Dim PhoneManager As New Windows10ConnectionManager
+    Dim PhoneList As New List(Of DiscoveredDeviceInfo)
     Dim EmptyList As New List(Of String)
 
     'Application deploying management
@@ -26,35 +21,6 @@ Class MainWindow
 
     'Events
     Private Event PhoneConnected()
-
-    Private Function OpenWindowAsync(Of TWindow As {System.Windows.Window, New})() As Task
-        Dim TaskComp As New TaskCompletionSource(Of Object)
-
-        'Create child window container
-        Dim WinThread As New Thread(Sub()
-                                        Dim WindowInstance As New TWindow
-                                        'Close target window's event loop when closed
-                                        AddHandler WindowInstance.Closed, Sub()
-                                                                              System.Windows.Threading.Dispatcher.ExitAllFrames()
-                                                                          End Sub
-                                        'Show window in separated thread
-                                        WindowInstance.Show()
-                                        'Start window's event loop
-                                        System.Windows.Threading.Dispatcher.Run()
-                                        'Set task's result
-                                        TaskComp.SetResult(Nothing)
-                                    End Sub)
-
-        'Allow sub thread to be exited when calling Application.Current.Shutdown()
-        WinThread.IsBackground = True
-        'Allow UI dispatching
-        WinThread.SetApartmentState(ApartmentState.STA)
-        'Start sub thread
-        WinThread.Start()
-
-        'Returns task object
-        Return TaskComp.Task
-    End Function
 
     Private Function IsCurrentPackageInHistoryList(PackagePath As String) As Boolean
         For Each HistoryEntry As String In AppHistoryList
@@ -65,20 +31,26 @@ Class MainWindow
         Return False
     End Function
 
-    Private Sub UpdatePhoneList()
+    Private Async Function UpdatePhoneList() As Task
+        Dim EnumeratingProgress As ProgressDialogController
+        EnumeratingProgress = Await DialogManager.ShowProgressAsync(Me, "Enumerating devices", "Discovering connectable devices...")
+        EnumeratingProgress.SetIndeterminate()
+
         'Enumerate available phones
         Try
             Dim PhoneNameList As New List(Of String)
             PhoneList.Clear()
-            For Each Device In PhoneManager.EnumerateDevices()
+            For Each Device In Await PhoneManager.EnumerateDevicesAsync()
                 PhoneList.Add(Device)
-                PhoneNameList.Add(PhoneNameMode.Replace("{Name}", Device.Name).Replace("{ID}", Device.Id).Replace("{IsEmulator}", IIf(Device.IsEmulator, " (Emulator)", "(Real Device)")))
+                PhoneNameList.Add(PhoneNameMode.Replace("{Name}", Device.Name).Replace("{OSVersion}", Device.OSVersion).Replace("{ID}", Device.UniqueId.ToString()).Replace("{{IPAddress}}", Device.Address))
             Next
             lstPhones.ItemsSource = PhoneNameList
         Catch ex As Exception
             lstPhones.ItemsSource = EmptyList
         End Try
-    End Sub
+
+        Await EnumeratingProgress.CloseAsync()
+    End Function
 
     Private Async Sub ConnectToSelectedPhone()
         Dim ConnectingProgress As ProgressDialogController
@@ -112,15 +84,25 @@ Class MainWindow
 
     Private Sub UpdatePhoneInfo() Handles Me.PhoneConnected
         lblDeviceName.Text = PhoneManager.ConnectedPhone.RawDevice.Name
-        lblDeviceID.Text = PhoneManager.ConnectedPhone.RawDevice.Id
-        lblIsEmulator.Text = IIf(PhoneManager.ConnectedPhone.RawDevice.IsEmulator(), "是", "否")
-        Dim PhoneInfo As ISystemInfo = PhoneManager.ConnectedPhone.ConnectedDevice.GetSystemInfo()
-        lblOSBuild.Text = PhoneInfo.OSMajor.ToString() & "." & PhoneInfo.OSMinor.ToString() & "." & PhoneInfo.OSBuildNo.ToString()
-        lblProcessorArchitecture.Text = PhoneInfo.ProcessorArchitecture
-        lblProcessorInstructionSet.Text = PhoneInfo.InstructionSet
-        lblProcessorCount.Text = PhoneInfo.NumberOfProcessors.ToString()
-        lblRAMSize.Text = PhoneInfo.AvailPhys.ToString() & " / " & PhoneInfo.TotalPhys.ToString()
-        lblVirtualRAMSize.Text = PhoneInfo.AvailVirtual.ToString() & " / " & PhoneInfo.TotalVirtual.ToString()
+        lblDeviceID.Text = PhoneManager.ConnectedPhone.RawDevice.UniqueId.ToString()
+        lblDeviceIPAddress.Text = PhoneManager.ConnectedPhone.RawDevice.Address
+        lblDeviceLocation.Text = PhoneManager.ConnectedPhone.RawDevice.Location
+        lblOSBuild.Text = PhoneManager.ConnectedPhone.RawDevice.OSVersion
+        lblProcessorArchitecture.Text = PhoneManager.ConnectedPhone.RawDevice.Architecture
+        Select Case PhoneManager.ConnectedPhone.RawDevice.Connection
+            Case DiscoveredDeviceInfo.ConnectionType.IpOverUsb
+                lblDeviceConnectionMethod.Text = "IP Over USB"
+            Case DiscoveredDeviceInfo.ConnectionType.MDNS
+                lblDeviceConnectionMethod.Text = "MDNS"
+            Case DiscoveredDeviceInfo.ConnectionType.SirepBroadcast1
+                lblDeviceConnectionMethod.Text = "SirepBroadcast1"
+            Case DiscoveredDeviceInfo.ConnectionType.SirepBroadcast2
+                lblDeviceConnectionMethod.Text = "SirepBroadcast2"
+            Case DiscoveredDeviceInfo.ConnectionType.Other
+                lblDeviceConnectionMethod.Text = "Other"
+            Case Else
+                lblDeviceConnectionMethod.Text = "Other"
+        End Select
     End Sub
 
     Private Sub RefreshAppDeployHistory()
@@ -187,21 +169,21 @@ Class MainWindow
         End If
     End Sub
 
-    Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
+    Private Async Sub UWPDeployerWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         'Find connectable phones
-        UpdatePhoneList()
+        Await UpdatePhoneList()
 
         'Load app deployment history
-        AppHistoryList = SettingsProvider.LoadAppDeployHistoryList()
+        AppHistoryList = SettingsProvider.LoadUWPDeployHistoryList()
         RefreshAppDeployHistory()
 
         'UI update
         UpdateControlStatus()
     End Sub
 
-    Private Sub MainWindow_Closing(sender As Object, e As ComponentModel.CancelEventArgs) Handles Me.Closing
+    Private Sub UWPDeployerWindow_Closing(sender As Object, e As ComponentModel.CancelEventArgs) Handles Me.Closing
         'Save history
-        SettingsProvider.SaveAppDeployHistoryList(AppHistoryList)
+        SettingsProvider.SaveUWPDeployHistoryList(AppHistoryList)
     End Sub
 
     Private Sub btnRefreshPhone_Click(sender As Object, e As RoutedEventArgs) Handles btnRefreshPhone.Click
@@ -212,15 +194,11 @@ Class MainWindow
         ConnectToSelectedPhone()
     End Sub
 
-    Private Sub btnUWPDeployment_Click(sender As Object, e As RoutedEventArgs) Handles btnUWPDeployment.Click
-        OpenWindowAsync(Of UWPDeployerWindow)()
-    End Sub
-
     Private Sub btnBrowse_Click(sender As Object, e As RoutedEventArgs) Handles btnBrowse.Click
         Dim AppPackageBrowseDialog As New CommonOpenFileDialog
         With AppPackageBrowseDialog
             .EnsureFileExists = True
-            .Filters.Add(New CommonFileDialogFilter("應用程式封包", ".xap;.appx;.appxbundle"))
+            .Filters.Add(New CommonFileDialogFilter("UWP 應用程式封包", ".appx;.appxbundle"))
             .Filters.Add(New CommonFileDialogFilter("所有檔案", ".*"))
             .Multiselect = True
         End With
@@ -277,7 +255,7 @@ Class MainWindow
                         InstallingProgress.SetMessage("Installing """ & AppPackage & """...")
 
                         'Install package asynchronously
-                        Await PhoneManager.InstallAppPackageAsync(AppPackage)
+                        Await PhoneManager.InstallAppPackageAsync(AppPackage, New List(Of String), "")
 
                         'Update log
                         WriteAppDeploymentLog("Installed package """ & AppPackage & """ successfully.")
@@ -298,7 +276,7 @@ Class MainWindow
                 Await InstallingProgress.CloseAsync()
 
                 'Save history list
-                SettingsProvider.SaveAppDeployHistoryList(AppHistoryList)
+                SettingsProvider.SaveUWPDeployHistoryList(AppHistoryList)
             Else
                 Await ShowMessageAsync("No packages selected", "Please add at least 1 app package to start installing.")
             End If
@@ -311,7 +289,7 @@ Class MainWindow
         Dim AppPackageBrowseDialog As New CommonOpenFileDialog
         With AppPackageBrowseDialog
             .EnsureFileExists = True
-            .Filters.Add(New CommonFileDialogFilter("應用程式封包", ".xap;.appx;.appxbundle"))
+            .Filters.Add(New CommonFileDialogFilter("UWP 應用程式封包", ".appx;.appxbundle"))
             .Filters.Add(New CommonFileDialogFilter("所有檔案", ".*"))
             .Multiselect = True
         End With
@@ -320,7 +298,7 @@ Class MainWindow
             For Each AppPackagePath As String In AppPackageBrowseDialog.FileNames
                 AddAppDeployHistory(AppPackagePath)
             Next
-            SettingsProvider.SaveAppDeployHistoryList(AppHistoryList)
+            SettingsProvider.SaveUWPDeployHistoryList(AppHistoryList)
         End If
     End Sub
 
@@ -350,7 +328,7 @@ Class MainWindow
                                               MessageDialogStyle.AffirmativeAndNegative)
         If MsgBoxResult = MessageDialogResult.Affirmative Then
             AppHistoryList.Clear()
-            SettingsProvider.SaveAppDeployHistoryList(AppHistoryList)
+            SettingsProvider.SaveUWPDeployHistoryList(AppHistoryList)
             RefreshAppDeployHistory()
         End If
     End Sub
