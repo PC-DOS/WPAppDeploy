@@ -76,10 +76,10 @@ Public Class WindowsPhoneConnectionManager
     Public Async Function ConnectToPhoneAsync(PhoneToConnect As ConnectableDevice) As Task
         Try
             Dim PhoneConnector As New PhoneConnectingThread(PhoneToConnect)
-            Dim ConnectionTask As Task(Of IDevice) = Await Task.Factory.StartNew(Function() As IDevice
-                                                                                     Return PhoneConnector.ConnectToPhone()
-                                                                                 End Function)
-            _ConnectedPhone.ConnectedDevice = ConnectionTask.Result
+            Await Task.Factory.StartNew(Sub()
+                                            PhoneConnector.ConnectToPhone()
+                                        End Sub)
+            _ConnectedPhone.ConnectedDevice = PhoneConnector.ConnectedPhone
             _ConnectedPhone.RawDevice = PhoneToConnect
             _IsPhoneConnected = True
         Catch ex As Exception
