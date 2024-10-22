@@ -12,11 +12,11 @@ Imports System.Windows
 ' 檢閱組件屬性的值
 
 <Assembly: AssemblyTitle("WPAppDeploy")> 
-<Assembly: AssemblyDescription("")> 
-<Assembly: AssemblyCompany("")> 
+<Assembly: AssemblyDescription("Windows Phone App Deployment Tool")> 
+<Assembly: AssemblyCompany("PC-DOS Workshop")> 
 <Assembly: AssemblyProduct("WPAppDeploy")> 
-<Assembly: AssemblyCopyright("Copyright ©  2023")> 
-<Assembly: AssemblyTrademark("")> 
+<Assembly: AssemblyCopyright("Copyright © 2013-2024 PC-DOS Workshop")> 
+<Assembly: AssemblyTrademark("PC-DOS Workshop")> 
 <Assembly: ComVisible(false)>
 
 '為了建置可當地語系化的應用程式，請設定 
