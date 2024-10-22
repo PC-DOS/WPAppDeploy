@@ -63,7 +63,7 @@ Class MainWindow
             Await ConnectingProgress.CloseAsync()
             'Check result
             If Not IsPhoneConnected Then
-                Await ShowMessageAsync("Connection failed", "Unable to connect to """ & lstPhones.SelectedItem.ToString() & """..." & vbCrLf & "Error " & ResultMessage)
+                Await ShowMessageAsync("Connection failed", "Unable to connect to """ & lstPhones.SelectedItem.ToString().Replace(vbCrLf, " ") & """..." & vbCrLf & "Error " & ResultMessage)
                 IsPhoneConnected = False
             Else
                 IsPhoneConnected = True

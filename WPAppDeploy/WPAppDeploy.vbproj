@@ -62,12 +62,21 @@
     </Reference>
     <Reference Include="Microsoft.Smartdevice.Connectivity, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Microsoft.SmartDevice.Connectivity\v4.0_12.0.0.0__b03f5f7f11d50a3a\Microsoft.Smartdevice.Connectivity.dll</HintPath>
+      <HintPath>.\Microsoft.Smartdevice.Connectivity.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.SmartDevice.Connectivity.Interface, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.Smartdevice.Connectivity.Interface, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Microsoft.Smartdevice.Connectivity.Interface.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Smartdevice.MultiTargeting.Connectivity, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Microsoft.SmartDevice.MultiTargeting.Connectivity\v4.0_12.0.0.0__b03f5f7f11d50a3a\Microsoft.Smartdevice.MultiTargeting.Connectivity.dll</HintPath>
+      <HintPath>.\Microsoft.Smartdevice.MultiTargeting.Connectivity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Tools.Connectivity">
+      <HintPath>.\Microsoft.Tools.Connectivity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Tools.Deploy">
+      <HintPath>.\Microsoft.Tools.Deploy.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\packages\WindowsAPICodePack-Core.1.1.1\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
