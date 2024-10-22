@@ -19,10 +19,20 @@ Class MainWindow
     Dim EmptyList As New List(Of String)
 
     'Application deploying management
-
+    Dim AppHistoryList As New List(Of String)
+    Dim AppDeploymentLog As New List(Of String)
 
     'Events
     Private Event PhoneConnected()
+
+    Private Function IsCurrentPackageInHistoryList(PackagePath As String) As Boolean
+        For Each HistoryEntry As String In AppHistoryList
+            If PackagePath.Trim().ToUpper = HistoryEntry.Trim().ToUpper() Then
+                Return True
+            End If
+        Next
+        Return False
+    End Function
 
     Private Sub UpdatePhoneList()
         'Enumerate available phones
@@ -38,6 +48,7 @@ Class MainWindow
             lstPhones.ItemsSource = EmptyList
         End Try
     End Sub
+
     Private Async Sub ConnectToSelectedPhone()
         Dim ConnectingProgress As MahApps.Metro.Controls.Dialogs.ProgressDialogController
         Dim ResultMessage As String = " : Unknown error"
@@ -52,6 +63,7 @@ Class MainWindow
             End Try
             'Connect
             ConnectingProgress = Await DialogManager.ShowProgressAsync(Me, "Connecting", "Connecting to """ & lstPhones.SelectedItem.ToString() & """...")
+            ConnectingProgress.SetIndeterminate()
             Try
                 'PhoneManager.ConnectToPhone(PhoneList(lstPhones.SelectedIndex))
                 Await PhoneManager.ConnectToPhoneAsync(PhoneList(lstPhones.SelectedIndex))
