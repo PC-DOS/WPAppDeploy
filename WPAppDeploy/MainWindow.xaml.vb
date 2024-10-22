@@ -12,13 +12,14 @@ Class MainWindow
     'Constants
     Const PhoneNameMode As String = "{Name}" & vbCrLf & "(ID={ID})" & vbCrLf & "{IsEmulator}"
 
-    'Variables
-    Dim PhoneManager As New MultiTargetingConnectivity(System.Globalization.CultureInfo.CurrentCulture.LCID)
+
+    'Phone connection management
+    Dim PhoneManager As New WindowsPhoneConnectionManager
     Dim PhoneList As New List(Of ConnectableDevice)
-    Dim CurrentConnectedPhoneOrigin As ConnectableDevice
-    Dim CurrentConnectedPhone As IDevice = Nothing
     Dim EmptyList As New List(Of String)
-    Dim IsPhoneConnected As Boolean = False
+
+    'Application deploying management
+
 
     'Events
     Private Event PhoneConnected()
@@ -28,7 +29,7 @@ Class MainWindow
         Try
             Dim PhoneNameList As New List(Of String)
             PhoneList.Clear()
-            For Each Device In PhoneManager.GetConnectableDevices(False)
+            For Each Device In PhoneManager.EnumerateDevices()
                 PhoneList.Add(Device)
                 PhoneNameList.Add(PhoneNameMode.Replace("{Name}", Device.Name).Replace("{ID}", Device.Id).Replace("{IsEmulator}", IIf(Device.IsEmulator, " (Emulator)", "(Real Device)")))
             Next
@@ -39,44 +40,38 @@ Class MainWindow
     End Sub
     Private Async Sub ConnectToSelectedPhone()
         Dim ConnectingProgress As MahApps.Metro.Controls.Dialogs.ProgressDialogController
-        Dim ResultMessage As String = "Unknown error"
+        Dim ResultMessage As String = " : Unknown error"
         If lstPhones.SelectedIndex >= 0 Then
             'Disconnect
             Try
-                If Not IsNothing(CurrentConnectedPhone) Then
-                    CurrentConnectedPhone.Disconnect()
+                If PhoneManager.IsPhoneConnected Then
+                    PhoneManager.DiconnectFromPhone()
                 End If
-                IsPhoneConnected = False
             Catch ex As Exception
-                IsPhoneConnected = False
+
             End Try
             'Connect
             ConnectingProgress = Await DialogManager.ShowProgressAsync(Me, "Connecting", "Connecting to """ & lstPhones.SelectedItem.ToString() & """...")
             Try
-                System.Windows.Forms.Application.DoEvents()
-                CurrentConnectedPhone = PhoneList(lstPhones.SelectedIndex).Connect()
-                IsPhoneConnected = True
+                'PhoneManager.ConnectToPhone(PhoneList(lstPhones.SelectedIndex))
+                Await PhoneManager.ConnectToPhoneAsync(PhoneList(lstPhones.SelectedIndex))
             Catch ex As Exception
-                IsPhoneConnected = False
                 ResultMessage = ex.HResult.ToString & ": " & ex.Message
             End Try
             Await ConnectingProgress.CloseAsync()
             'Check result
-            If Not IsPhoneConnected Then
+            If Not PhoneManager.IsPhoneConnected Then
                 Await ShowMessageAsync("Connection failed", "Unable to connect to """ & lstPhones.SelectedItem.ToString().Replace(vbCrLf, " ") & """..." & vbCrLf & "Error " & ResultMessage)
-                IsPhoneConnected = False
             Else
-                IsPhoneConnected = True
-                CurrentConnectedPhoneOrigin = PhoneList(lstPhones.SelectedIndex)
                 RaiseEvent PhoneConnected()
             End If
         End If
     End Sub
     Private Sub UpdatePhoneInfo() Handles Me.PhoneConnected
-        lblDeviceName.Text = CurrentConnectedPhoneOrigin.Name
-        lblDeviceID.Text = CurrentConnectedPhoneOrigin.Id
-        lblIsEmulator.Text = IIf(CurrentConnectedPhoneOrigin.IsEmulator(), "是", "否")
-        Dim PhoneInfo As ISystemInfo = CurrentConnectedPhone.GetSystemInfo()
+        lblDeviceName.Text = PhoneManager.ConnectedPhone.RawDevice.Name
+        lblDeviceID.Text = PhoneManager.ConnectedPhone.RawDevice.Id
+        lblIsEmulator.Text = IIf(PhoneManager.ConnectedPhone.RawDevice.IsEmulator(), "是", "否")
+        Dim PhoneInfo As ISystemInfo = PhoneManager.ConnectedPhone.ConnectedDevice.GetSystemInfo()
         lblOSBuild.Text = PhoneInfo.OSMajor.ToString() & "." & PhoneInfo.OSMinor.ToString() & "." & PhoneInfo.OSBuildNo.ToString()
         lblProcessorArchitecture.Text = PhoneInfo.ProcessorArchitecture
         lblProcessorInstructionSet.Text = PhoneInfo.InstructionSet
@@ -98,31 +93,12 @@ Class MainWindow
     End Sub
 
     Private Sub btnTestDeploy_Click(sender As Object, e As RoutedEventArgs) Handles btnTestDeploy.Click
-        If IsPhoneConnected Then
+        If PhoneManager.IsPhoneConnected Then
             Dim AppPackagePath As String = "D:\WP8ApplicationCollection\Repack\QQ.xap"
             AppPackagePath = "D:\Program Files\WPHackingTools\vcREG1.6\vcREG_1_6_W10M_PCMod.xap"
             'AppPackagePath = "D:\WP8ApplicationCollection\Repack\42722sim756.LightSensor_2015.918.1119.0_neutral_~_ggbebs9x2d86a.appxbundle"
 
-            Dim AppGuid As System.Guid
-            Dim AppGenre As String
-            Dim AppIconPath As String
-            If AppPackagePath.ToUpper.EndsWith(".XAP") Then
-                Dim AppManifest As New Xap(AppPackagePath)
-                AppGuid = AppManifest.Guid
-                AppGenre = "32"
-                AppIconPath = AppManifest.Icon
-            Else
-                Dim AppManifest As IAppManifestInfo = Utils.ReadAppManifestInfoFromPackage(AppPackagePath)
-                AppGuid = AppManifest.ProductId
-                AppGenre = "32"
-                AppIconPath = CInt(AppManifest.PackageType).ToString()
-            End If
-
-            CurrentConnectedPhone.InstallApplication(AppGuid, _
-                                                     AppGuid, _
-                                                     AppGenre, _
-                                                     AppIconPath, _
-                                                     AppPackagePath)
+            PhoneManager.InstallAppPackage(AppPackagePath)
         End If
     End Sub
 End Class

@@ -30,7 +30,7 @@
         <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="2.5" Margin="0" />
         <Controls:MetroTabControl Grid.Column="2">
             <Controls:MetroTabItem Header="裝置資訊" Controls:ControlsHelper.HeaderFontSize="20">
-                <Grid Margin="10,0,0,0">
+                <Grid Margin="10,10,0,0">
                     <ScrollViewer>
                         <StackPanel Orientation="Vertical" >
                             <Grid Margin="0,0,0,5">
@@ -108,6 +108,43 @@
                             <Button x:Name="btnTestDeploy" Content="Test Deploy" HorizontalAlignment="Left" VerticalAlignment="Top" />
                         </StackPanel>
                     </ScrollViewer>
+                </Grid>
+            </Controls:MetroTabItem>
+            <Controls:MetroTabItem Header="應用程式部署" Controls:ControlsHelper.HeaderFontSize="20">
+                <Grid Margin="10,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="2*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="將要部署的應用程式清單:" />
+                        <TextBox Grid.Row="1" x:Name="txtAppsToDeploy" Margin="0,5,0,0" />
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0">
+                            <Button x:Name="btnBrowse" Content="瀏覽(_B)..." MinWidth="75" />
+                            <Button x:Name="btnClearPendingList" Content="全部刪除(_C)" MinWidth="75" Margin="5,0,0,0" />
+                            <Button x:Name="btnInstall" Content="安裝(_I)" MinWidth="75" Margin="5,0,0,0" />
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="1" Margin="0,10,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="之前部署過的應用程式清單:" />
+                        <TextBox Grid.Row="1" x:Name="txtAppsDeployHistory" Margin="0,5,0,0" />
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0">
+                            <Button x:Name="btnAddToPendingList" Content="加入到部署清單(_A)" MinWidth="75" />
+                            <Button x:Name="btnRemoveHistoryEntry" Content="移除(_R)" MinWidth="75" Margin="5,0,0,0" />
+                            <Button x:Name="btnClearHistoryList" Content="全部刪除(_C)" MinWidth="75" Margin="5,0,0,0" />
+                        </StackPanel>
+                    </Grid>
                 </Grid>
             </Controls:MetroTabItem>
         </Controls:MetroTabControl>
