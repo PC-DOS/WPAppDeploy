@@ -6,7 +6,7 @@
     Public Const AppDeployHistoryListDefVal As String = ""
     Public Const AppDeployHistoryListSeparator As String = "|"
 
-    Public Shared Function GetAppDeployHistoryList() As List(Of String)
+    Public Shared Function LoadAppDeployHistoryList() As List(Of String)
         'Load setting from registry
         Dim HistoryListStringRaw As String = GetSetting(ApplicationName, _
                                                SettingsSectionName, _
@@ -14,7 +14,7 @@
                                                AppDeployHistoryListDefVal)
 
         'Generate history list
-        Dim HistoryListString() As String = HistoryListStringRaw.Split(AppDeployHistoryListSeparator)
+        Dim HistoryListString() As String = HistoryListStringRaw.Split(AppDeployHistoryListSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
         Dim HistoryList As New List(Of String)
         For Each HistoryEntry As String In HistoryListString
             If HistoryEntry.Trim().Length <> 0 Then
