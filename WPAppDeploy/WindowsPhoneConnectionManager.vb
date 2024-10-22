@@ -148,6 +148,11 @@ Public Class WindowsPhoneConnectionManager
                 AppIconPath = CInt(AppManifest.PackageType).ToString()
             End If
 
+            'Check if package is already installed
+            If _PhoneToDeploy.IsApplicationInstalled(AppGuid) Then
+                _PhoneToDeploy.GetApplication(AppGuid).Uninstall()
+            End If
+
             'Install package
             _DeployedAppPackage = _PhoneToDeploy.InstallApplication(AppGuid, _
                                                                     AppGuid, _
