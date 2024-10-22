@@ -186,8 +186,8 @@ Class UWPDeployerWindow
         SettingsProvider.SaveUWPDeployHistoryList(AppHistoryList)
     End Sub
 
-    Private Sub btnRefreshPhone_Click(sender As Object, e As RoutedEventArgs) Handles btnRefreshPhone.Click
-        UpdatePhoneList()
+    Private Async Sub btnRefreshPhone_Click(sender As Object, e As RoutedEventArgs) Handles btnRefreshPhone.Click
+        Await UpdatePhoneList()
     End Sub
 
     Private Sub btnConnect_Click(sender As Object, e As RoutedEventArgs) Handles btnConnect.Click
