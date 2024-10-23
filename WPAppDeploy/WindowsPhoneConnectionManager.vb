@@ -249,8 +249,8 @@ Public Class WindowsPhoneConnectionManager
             _ConnectedPhone.RawDevice = PhoneToConnect
             _IsPhoneConnected = True
             Return _ConnectedPhone
-        Catch ex As Exception
-            Throw ex
+        Catch
+            Throw
             _IsPhoneConnected = False
             Return Nothing
         End Try
@@ -272,8 +272,8 @@ Public Class WindowsPhoneConnectionManager
             _ConnectedPhone.RawDevice = PhoneToConnect
             _IsPhoneConnected = True
             Return _ConnectedPhone
-        Catch ex As Exception
-            Throw ex
+        Catch
+            Throw
             _IsPhoneConnected = False
             Return Nothing
         End Try
@@ -286,13 +286,8 @@ Public Class WindowsPhoneConnectionManager
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Function InstallAppPackage(AppPackagePath As String) As IRemoteApplication
-        Try
-            Dim AppDeployer As New AppDeployingThread(_ConnectedPhone.ConnectedDevice, AppPackagePath)
-            Return AppDeployer.InstallAppPackage()
-        Catch ex As Exception
-            Throw ex
-            Return Nothing
-        End Try
+        Dim AppDeployer As New AppDeployingThread(_ConnectedPhone.ConnectedDevice, AppPackagePath)
+        Return AppDeployer.InstallAppPackage()
     End Function
 
     ''' <summary>
@@ -302,16 +297,11 @@ Public Class WindowsPhoneConnectionManager
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Async Function InstallAppPackageAsync(AppPackagePath As String) As Task(Of IRemoteApplication)
-        Try
-            Dim AppDeployer As New AppDeployingThread(_ConnectedPhone.ConnectedDevice, AppPackagePath)
-            Await Task.Factory.StartNew(Sub()
-                                            AppDeployer.InstallAppPackage()
-                                        End Sub)
-            Return AppDeployer.DeployedAppPackage
-        Catch ex As Exception
-            Throw ex
-            Return Nothing
-        End Try
+        Dim AppDeployer As New AppDeployingThread(_ConnectedPhone.ConnectedDevice, AppPackagePath)
+        Await Task.Factory.StartNew(Sub()
+                                        AppDeployer.InstallAppPackage()
+                                    End Sub)
+        Return AppDeployer.DeployedAppPackage
     End Function
 
     ''' <summary>
