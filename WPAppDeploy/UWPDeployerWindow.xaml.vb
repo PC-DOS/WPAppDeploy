@@ -263,7 +263,6 @@ Class UWPDeployerWindow
                         AddAppDeployHistory(AppPackage)
                         SuccessCount += 1
                     Catch ex As Exception
-                        IsDoubleTryRequested = True
                         'Logging
                         WriteAppDeploymentLog("Failed installing package """ & AppPackage & """. " & ex.Message)
                         FailureCount += 1
