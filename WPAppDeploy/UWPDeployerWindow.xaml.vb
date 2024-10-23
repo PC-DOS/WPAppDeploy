@@ -118,11 +118,7 @@ Class UWPDeployerWindow
         RefreshAppDeployHistory()
     End Sub
 
-    Private Sub WriteAppDeploymentLog(LogText As String)
-        'Write log
-        AppDeploymentLog.Add(LogText)
-
-        'Update display
+    Private Sub RefreshAppDeploymentLog()
         lstAppDeployLog.ItemsSource = EmptyList
         lstAppDeployLog.ItemsSource = AppDeploymentLog
         lstAppDeployLog.SelectedIndex = lstAppDeployLog.Items.Count - 1
@@ -131,6 +127,14 @@ Class UWPDeployerWindow
         Catch ex As Exception
             Exit Sub
         End Try
+    End Sub
+
+    Private Sub WriteAppDeploymentLog(LogText As String)
+        'Write log
+        AppDeploymentLog.Add(LogText)
+
+        'Update display
+        RefreshAppDeploymentLog()
     End Sub
 
     Private Sub AddSelectedPackagesToPendingList()
@@ -247,7 +251,7 @@ Class UWPDeployerWindow
                 prgAppDeployment.Minimum = 0
                 prgAppDeployment.Maximum = PackageCount
                 AppDeploymentLog.Clear()
-                RefreshAppDeployHistory()
+                RefreshAppDeploymentLog()
 
                 'Install apps
                 For Each AppPackage As String In PendingList
