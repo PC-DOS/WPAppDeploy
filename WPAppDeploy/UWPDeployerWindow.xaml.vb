@@ -203,7 +203,7 @@ Class UWPDeployerWindow
             .Filters.Add(New CommonFileDialogFilter("所有檔案", ".*"))
             .Multiselect = True
         End With
-        If AppPackageBrowseDialog.ShowDialog() = CommonFileDialogResult.Ok Then
+        If AppPackageBrowseDialog.ShowDialog(Me) = CommonFileDialogResult.Ok Then
             'Add selected package to pending list
             For Each AppPackagePath As String In AppPackageBrowseDialog.FileNames
                 txtAppsToDeploy.Text = txtAppsToDeploy.Text & AppPackagePath.Trim() & vbCrLf
@@ -256,13 +256,14 @@ Class UWPDeployerWindow
                         InstallingProgress.SetMessage("Installing """ & AppPackage & """...")
 
                         'Install package asynchronously
-                        Await PhoneManager.InstallAppPackageAsync(AppPackage, New List(Of String), "")
+                        Await PhoneManager.InstallAppPackageAsync(AppPackage, New List(Of String), Nothing)
 
                         'Update log
                         WriteAppDeploymentLog("Installed package """ & AppPackage & """ successfully.")
                         AddAppDeployHistory(AppPackage)
                         SuccessCount += 1
                     Catch ex As Exception
+                        IsDoubleTryRequested = True
                         'Logging
                         WriteAppDeploymentLog("Failed installing package """ & AppPackage & """. " & ex.Message)
                         FailureCount += 1
@@ -294,7 +295,7 @@ Class UWPDeployerWindow
             .Filters.Add(New CommonFileDialogFilter("所有檔案", ".*"))
             .Multiselect = True
         End With
-        If AppPackageBrowseDialog.ShowDialog() = CommonFileDialogResult.Ok Then
+        If AppPackageBrowseDialog.ShowDialog(Me) = CommonFileDialogResult.Ok Then
             'Add selected package to pending list
             For Each AppPackagePath As String In AppPackageBrowseDialog.FileNames
                 AddAppDeployHistory(AppPackagePath)

@@ -195,7 +195,7 @@ Public Class Windows10ConnectionManager
         ''' <param name="NewPhoneToDeploy">Instance of deploying target.</param>
         ''' <param name="NewAppPackagePath">Path to app package.</param>
         ''' <remarks></remarks>
-        Public Sub New(Optional NewPhoneToDeploy As RemoteDeployClient = Nothing, Optional NewAppPackagePath As String = "", Optional NewAppDependencies As List(Of String) = Nothing, Optional NewAppCertPath As String = "")
+        Public Sub New(Optional NewPhoneToDeploy As RemoteDeployClient = Nothing, Optional NewAppPackagePath As String = Nothing, Optional NewAppDependencies As List(Of String) = Nothing, Optional NewAppCertPath As String = Nothing)
             _PhoneToDeploy = NewPhoneToDeploy
             _AppPackagePath = NewAppPackagePath
             _AppDependencies = NewAppDependencies
@@ -208,7 +208,7 @@ Public Class Windows10ConnectionManager
         ''' <remarks></remarks>
         Public Function InstallAppPackage() As String
             'Install package
-            _PhoneToDeploy.InstallAppx(InstallAppxOptions.Install, _AppPackagePath, _AppDependencies, _AppCertPath)
+            _PhoneToDeploy.InstallAppx(InstallAppxOptions.ResolveDependencies, _AppPackagePath, _AppDependencies, _AppCertPath)
             _DeployedAppPackage = ""
             Return _DeployedAppPackage
         End Function

@@ -224,7 +224,7 @@ Class MainWindow
             .Filters.Add(New CommonFileDialogFilter("所有檔案", ".*"))
             .Multiselect = True
         End With
-        If AppPackageBrowseDialog.ShowDialog() = CommonFileDialogResult.Ok Then
+        If AppPackageBrowseDialog.ShowDialog(Me) = CommonFileDialogResult.Ok Then
             'Add selected package to pending list
             For Each AppPackagePath As String In AppPackageBrowseDialog.FileNames
                 txtAppsToDeploy.Text = txtAppsToDeploy.Text & AppPackagePath.Trim() & vbCrLf
@@ -315,7 +315,7 @@ Class MainWindow
             .Filters.Add(New CommonFileDialogFilter("所有檔案", ".*"))
             .Multiselect = True
         End With
-        If AppPackageBrowseDialog.ShowDialog() = CommonFileDialogResult.Ok Then
+        If AppPackageBrowseDialog.ShowDialog(Me) = CommonFileDialogResult.Ok Then
             'Add selected package to pending list
             For Each AppPackagePath As String In AppPackageBrowseDialog.FileNames
                 AddAppDeployHistory(AppPackagePath)
