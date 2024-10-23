@@ -311,8 +311,8 @@ Public Class Windows10ConnectionManager
             _ConnectedPhone.RawDevice = PhoneToConnect
             _IsPhoneConnected = True
             Return _ConnectedPhone
-        Catch ex As Exception
-            Throw ex
+        Catch
+            Throw
             _IsPhoneConnected = False
             Return Nothing
         End Try
@@ -334,8 +334,8 @@ Public Class Windows10ConnectionManager
             _ConnectedPhone.RawDevice = PhoneToConnect
             _IsPhoneConnected = True
             Return _ConnectedPhone
-        Catch ex As Exception
-            Throw ex
+        Catch
+            Throw
             _IsPhoneConnected = False
             Return Nothing
         End Try
