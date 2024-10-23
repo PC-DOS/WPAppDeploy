@@ -253,7 +253,7 @@ Class UWPDeployerWindow
                 Dim PendingList As New List(Of String)
                 For Each AppPackage As String In PendingListOrig
                     If AppPackage.Trim().Length > 0 Then
-                        PendingList.Add(AppPackage)
+                        PendingList.Add(AppPackage.Trim())
                     End If
                 Next
 
