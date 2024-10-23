@@ -347,12 +347,8 @@ Public Class Windows10ConnectionManager
     ''' <param name="AppPackagePath">Path to the application package.</param>
     ''' <remarks></remarks>
     Public Sub InstallAppPackage(AppPackagePath As String, AppDependencies As List(Of String), AppCertPath As String)
-        Try
-            Dim AppDeployer As New AppDeployingThread(_ConnectedPhone.ConnectedDevice, AppPackagePath, AppDependencies, AppCertPath)
-            AppDeployer.InstallAppPackage()
-        Catch ex As Exception
-            Throw ex
-        End Try
+        Dim AppDeployer As New AppDeployingThread(_ConnectedPhone.ConnectedDevice, AppPackagePath, AppDependencies, AppCertPath)
+        AppDeployer.InstallAppPackage()
     End Sub
 
     ''' <summary>
@@ -362,14 +358,10 @@ Public Class Windows10ConnectionManager
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Async Function InstallAppPackageAsync(AppPackagePath As String, AppDependencies As List(Of String), AppCertPath As String) As Task
-        Try
-            Dim AppDeployer As New AppDeployingThread(_ConnectedPhone.ConnectedDevice, AppPackagePath, AppDependencies, AppCertPath)
-            Await Task.Factory.StartNew(Sub()
-                                            AppDeployer.InstallAppPackage()
-                                        End Sub)
-        Catch ex As Exception
-            Throw ex
-        End Try
+        Dim AppDeployer As New AppDeployingThread(_ConnectedPhone.ConnectedDevice, AppPackagePath, AppDependencies, AppCertPath)
+        Await Task.Factory.StartNew(Sub()
+                                        AppDeployer.InstallAppPackage()
+                                    End Sub)
     End Function
 
     ''' <summary>
