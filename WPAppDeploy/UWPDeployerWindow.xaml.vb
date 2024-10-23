@@ -89,7 +89,20 @@ Class UWPDeployerWindow
         lblDeviceIPAddress.Text = PhoneManager.ConnectedPhone.RawDevice.Address
         lblDeviceLocation.Text = PhoneManager.ConnectedPhone.RawDevice.Location
         lblOSBuild.Text = PhoneManager.ConnectedPhone.RawDevice.OSVersion
-        lblProcessorArchitecture.Text = PhoneManager.ConnectedPhone.RawDevice.Architecture
+        Select Case PhoneManager.ConnectedPhone.ConnectedDevice.TargetInfo.ProcessorArchitecture
+            Case ProcessorArchitecture.X86
+                lblProcessorArchitecture.Text = "X86"
+            Case ProcessorArchitecture.AMD64
+                lblProcessorArchitecture.Text = "AMD64"
+            Case ProcessorArchitecture.ARM
+                lblProcessorArchitecture.Text = "ARM"
+            Case ProcessorArchitecture.ARM64
+                lblProcessorArchitecture.Text = "ARM64"
+            Case ProcessorArchitecture.Unknown
+                lblProcessorArchitecture.Text = "Unknown"
+            Case Else
+                lblProcessorArchitecture.Text = "Unknown"
+        End Select
         Select Case PhoneManager.ConnectedPhone.RawDevice.Connection
             Case DiscoveredDeviceInfo.ConnectionType.IpOverUsb
                 lblDeviceConnectionMethod.Text = "IP Over USB"
