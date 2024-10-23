@@ -128,7 +128,6 @@ Public Class Windows10ConnectionManager
         Public Function ConnectToPhone() As RemoteDeployClient
             Dim ConnectionParam As New ConnectionOptions
             ConnectionParam.Guid = _PhoneToConnect.UniqueId
-            ConnectionParam.ConnectTimeout = TimeSpan.FromSeconds(5)
             _ConnectedPhone.Connect(ConnectionParam)
             Return _ConnectedPhone
         End Function
