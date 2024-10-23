@@ -271,6 +271,7 @@ Class MainWindow
                 Dim FailureCount As Integer = 0
                 prgAppDeployment.Minimum = 0
                 prgAppDeployment.Maximum = PackageCount
+                prgAppDeployment.Value = SuccessCount + FailureCount
                 AppDeploymentLog.Clear()
                 RefreshAppDeploymentLog()
 
